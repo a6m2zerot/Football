@@ -1,0 +1,25 @@
+.card_class{
+margin: auto;
+border-radius: 30px;
+}
+
+.card_class:hover{
+box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+.card{
+    width: 8em;
+    height: 18em;
+}
+
+
+.knopka_class{
+    padding: 13em 1.9em;
+    font-size: 25px;
+    text-decoration: none;
+}
+
+
+.unnamed_class{
+border-radius: 300px; /* отступ между заголовком и текстом */
+}
