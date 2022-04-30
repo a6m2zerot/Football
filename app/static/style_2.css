@@ -10,11 +10,12 @@ box-shadow: 0 2px 4px rgba(0,0,0,.2);
 .card{
     width: 8em;
     height: 18em;
+    background-color: rgba(255, 255, 128, .2);
 }
 
 
 .knopka_class{
-    padding: 13em 1.9em;
+    padding: 4em 4em;
     font-size: 25px;
     text-decoration: none;
 }

@@ -10,12 +10,22 @@
 </head>
 <body>
 
+<!-- Here comes the Navbar -->
+<nav class="navbar navbar-light bg-light">
+  <form class="container-fluid justify-content-end">
+    <a class="btn btn-outline-success me-4" href="{{ url_for('logout') }}" role="button">Log out</a>
+    <a class="btn btn-outline-danger me-2" href="{{ url_for('delete_all_stats') }}" role="button">Delete all stats</a> <!-- TODO Запилить удаление отдельной игры -->
+  </form>
+</nav>
+<br>
+
 
 <div class="row">
 {% for elem in array_of_games %}
 <div class="card m-3" style="width: 18rem;">
   <div class="card-body">
           <div class="mb-3">
+              <!-- <button type="button" class="btn-close" disabled aria-label="Close"></button> TODO Запилить удаление отдельной игры -->
               <p class="form-label text-center"><b>Game # {{ elem.id }}</b></p>
             <label for="exampleInputEmail" class="form-label">Meteor FC</label>
               <div class="form-control" id="exampleInputEmail" aria-describedby="emailHelp">{{ elem.meteor_goal }}</div>
@@ -32,7 +42,7 @@
 
 <div class="card m-3" style="width: 18rem;">
   <div class="card-body">
-      <a class="knopka_class" data-bs-toggle="modal" data-bs-target="#newgame">Add Game</a>
+    <a class="knopka_class position-absolute top-50 start-50 translate-middle" data-bs-toggle="modal" data-bs-target="#newgame">Add Game</a>
   </div>
 </div>
 </div>
@@ -45,7 +55,7 @@
                       <div class="card-body">
                             <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
                               <div class="mb-3">
-                                  <p class="form-label text-center">Game</p>
+                                  <p class="form-label text-center"><b>Game</b></p>
                                 <label for="meteor_goal" class="form-label">Meteor FC</label>
                                 <input type="number" class="form-control" id="meteor_goal" aria-describedby="emailHelp" name="meteor_goal">
                               </div>
@@ -53,8 +63,8 @@
                                 <label for="rocket_goal" class="form-label">Rocket FC</label>
                                 <input type="number" class="form-control" id="rocket_goal" name="rocket_goal">  <!-- МОЖНО ЗАДАВАТЬ РАЗНЫЕ ТИПЫ(type)!-->
                               </div>
-                              <input type="submit" class="btn btn-primary" value="Save">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <input type="submit" class="btn btn-outline-success me-2" value="Save">
+                              <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
                             </form>
                       </div>
                     </div>

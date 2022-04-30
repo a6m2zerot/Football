@@ -28,24 +28,25 @@ def index():
         meteor_goal = request.form["meteor_goal"]
         rocket_goal = request.form["rocket_goal"]
 
-        if meteor_goal > rocket_goal:
-            m = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=3, rocket_score=0)
-            db.session.add(m)
-            db.session.commit()
-            request.close()
-            return redirect("/index", 302)
-        elif meteor_goal == rocket_goal:
-            w = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=1, rocket_score=1)
-            db.session.add(w)
-            db.session.commit()
-            request.close()
-            return redirect("/index", 302)
-        else:
-            r = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=0, rocket_score=3)
-            db.session.add(r)
-            db.session.commit()
-            request.close()
-            return redirect("/index", 302)
+        if meteor_goal != "" and rocket_goal != "":  # TODO  "Шеф, усё пропало!" - добавил строку, чтоб не не падало :)
+            if meteor_goal > rocket_goal:
+                m = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=3, rocket_score=0)
+                db.session.add(m)
+                db.session.commit()
+                request.close()
+                return redirect("/index", 302)
+            elif meteor_goal == rocket_goal:
+                w = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=1, rocket_score=1)
+                db.session.add(w)
+                db.session.commit()
+                request.close()
+                return redirect("/index", 302)
+            else:
+                r = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=0, rocket_score=3)
+                db.session.add(r)
+                db.session.commit()
+                request.close()
+                return redirect("/index", 302)
 
     array_of_games = GameStats.query.all()
 
@@ -69,4 +70,11 @@ def index():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+@app.route("/delete_all_stats")
+def delete_all_stats():
+    db.session.query(GameStats).delete()  # TODO спросить, какие еще есть команды (+ разница между session и query)
+    db.session.commit()
+    return redirect("/index", 302)
 
