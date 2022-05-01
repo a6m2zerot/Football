@@ -60,10 +60,10 @@ def index():
         rocket_goal_total = rocket_goal_total + elem.rocket_goal  # Забитые голы Ракетой
 
     return render_template("index.html", array_of_games=array_of_games,
-                                         meteor_score_total=meteor_score_total,
-                                         rocket_score_total=rocket_score_total,
-                                         meteor_goal_total=meteor_goal_total,
-                                         rocket_goal_total=rocket_goal_total)
+                           meteor_score_total=meteor_score_total,
+                           rocket_score_total=rocket_score_total,
+                           meteor_goal_total=meteor_goal_total,
+                           rocket_goal_total=rocket_goal_total)
 
 
 @app.route('/logout')
@@ -74,7 +74,37 @@ def logout():
 
 @app.route("/delete_all_stats")
 def delete_all_stats():
-    db.session.query(GameStats).delete()  # TODO спросить, какие еще есть команды (+ разница между session и query)
+    db.session.query(GameStats).delete()
     db.session.commit()
     return redirect("/index", 302)
+
+
+@app.route("/delete_game_stats/<int:game_number>")
+def delete_game_stats(game_number):
+    db.session.query(GameStats).filter(GameStats.id == game_number).delete()
+    db.session.commit()
+    """
+    2-ой вариант 
+    attr = Gamestats.query.get(game_number)
+    db.session.delete(attr)
+    db.session.commit()
+    """
+    return redirect("/index", 302)
+
+"""
+UPDATE \ Обновление
+1.Получение объекта 
+2. Изменение конкретного поля объекта
+3. Добавление в сессию измененного объекта
+4. Сохранение изменений
+
+attr = GameStats.query.get(1)
+attr.meteor_goals = 10
+attr.rocket_goals = 2
+db.session.add(attr)
+db.session.commit()
+"""
+
+
+
 
