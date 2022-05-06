@@ -2,6 +2,21 @@ from app import app, db
 from flask import render_template, request, redirect, url_for, flash
 from app.models import User, GameStats
 from flask_login import current_user, login_user, logout_user
+from app.forms import RegistrationForm
+
+
+@app.route("/registration_form", methods=["POST", "GET"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    reg = RegistrationForm()
+    if reg.validate_on_submit():
+        user = User(username=reg.username.data)
+        user.set_password(reg.password.data)
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template("registration_form.html", form=reg)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -28,7 +43,7 @@ def index():
         meteor_goal = request.form["meteor_goal"]
         rocket_goal = request.form["rocket_goal"]
 
-        if meteor_goal != "" and rocket_goal != "":  # TODO  "Шеф, усё пропало!" - добавил строку, чтоб не не падало :)
+        if meteor_goal != "" and rocket_goal != "":  # "Шеф, усё пропало!" - добавил строку, чтоб не не падало :)
             if meteor_goal > rocket_goal:
                 m = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=3, rocket_score=0)
                 db.session.add(m)
