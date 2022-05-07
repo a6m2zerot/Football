@@ -15,7 +15,8 @@ def register():
         user.set_password(reg.password.data)
         db.session.add(user)
         db.session.commit()
-        return redirect(url_for('index'))
+        flash('Congratulations, you are now a registered user! Please log in.')
+        return redirect(url_for('login'))
     return render_template("registration_form.html", form=reg)
 
 
@@ -29,7 +30,7 @@ def login():
         user = User.query.filter_by(username=a).first()
 
         if user is None or not user.check_password(b):
-            flash('Invalid username or password')
+            flash('Invalid username or password. Please try again.')
             return redirect(url_for("login"))
         login_user(user)
         return redirect(url_for('index'))
