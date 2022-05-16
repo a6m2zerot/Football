@@ -23,18 +23,22 @@
 <div class="row">
 
     {% set ns = namespace(count=1) %}
-{% for elem in array_of_games %}
+{% for elem_games in array_of_games %}
 <div class="card m-3" style="width: 18rem;">
   <div class="card-body">
           <div class="mb-3">
-                  <a type="button" class="btn-close" aria-label="Close" href="{{ url_for('delete_game_stats', game_number=elem.id) }}"></a>
+                  <a type="button" class="btn-close" aria-label="Close" href="{{ url_for('delete_game_stats', game_number=elem_games.id) }}"></a>
               <p class="form-label text-center"><b>Game # {{ ns.count }}</b></p>
-            <label for="exampleInputEmail" class="form-label">Meteor FC</label>
-              <div class="form-control" id="exampleInputEmail" aria-describedby="emailHelp">{{ elem.meteor_goal }}</div>
+
+            <label for="exampleInputEmail" class="form-label">{{ elem_games.teams1.teamname }}</label>
+              <div class="form-control" id="exampleInputEmail" aria-describedby="emailHelp">{{ elem_games.goals_1 }}</div>
+
           </div>
           <div class="mb-3">
-            <label for="exampleInputPassword" class="form-label">Rocket FC</label>
-              <div class="form-control" id="exampleInputPassword">{{ elem.rocket_goal }}</div>
+
+            <label for="exampleInputPassword" class="form-label">{{ elem_games.teams2.teamname }}</label>
+              <div class="form-control" id="exampleInputPassword">{{ elem_games.goals_2 }}</div>
+
           </div>
   </div>
 </div>
@@ -58,12 +62,26 @@
                             <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
                               <div class="mb-3">
                                   <p class="form-label text-center"><b>Game</b></p>
-                                <label for="meteor_goal" class="form-label">Meteor FC</label>
-                                <input type="number" class="form-control" id="meteor_goal" aria-describedby="emailHelp" name="meteor_goal">
+                                <label for="1st_team_goal" class="form-label">
+                                        <select class="form-select" aria-label="Default select example" name="first_id">
+                                          <option selected>Choose the team:</option>
+                                      {% for elem in array_of_teams_1 %}
+                                          <option value="{{ elem.id }}">{{ elem.teamname }}</option>
+                                      {% endfor %}
+                                        </select>
+                                <input type="number" class="form-control" id="1st_team_goal" aria-describedby="emailHelp" name="1st_team_goal">
+                                </label>
                               </div>
                               <div class="mb-3">
-                                <label for="rocket_goal" class="form-label">Rocket FC</label>
-                                <input type="number" class="form-control" id="rocket_goal" name="rocket_goal">  <!-- МОЖНО ЗАДАВАТЬ РАЗНЫЕ ТИПЫ(type)!-->
+                                <label for="2nd_team_goal" class="form-label">
+                                        <select class="form-select" aria-label="Default select example" name="second_id">  #  name - то, как получим, value -  то, что получим
+                                          <option selected>Choose the team:</option>
+                                      {% for elem in array_of_teams_2 %}
+                                          <option value="{{ elem.id}}">{{ elem.teamname }}</option>
+                                      {% endfor %}
+                                        </select>
+                                <input type="number" class="form-control" id="2nd_team_goal" aria-describedby="emailHelp" name="2nd_team_goal"> <!-- МОЖНО ЗАДАВАТЬ РАЗНЫЕ ТИПЫ(type)!-->
+                                </label>
                               </div>
                               <input type="submit" class="btn btn-outline-success me-2" value="Save">
                               <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
@@ -89,20 +107,17 @@
     </tr>
   </thead>
   <tbody>
+  {% set ns = namespace(count=1) %}
+  {% for elem in array_of_games_per_team %}
     <tr>
-      <th scope="row">1</th>
-      <td>Meteor FC</td>
-      <td>{{ array_of_games|length }}</td>
-        <td>{{ meteor_goal_total }} - {{ rocket_goal_total }}</td>
-      <td>{{ meteor_score_total }}</td>
+      <th scope="row">{{ ns.count }}</th>
+      <td>{{ elem.teamname }}</td>
+      <td>{{ elem.team_id_overall_games }}</td>
+        <td>{{ elem.team_id_overall_goals }} - {{ elem.team_id_overall_passed_goals }}</td>
+      <td>{{ elem.team_id_overall_score }}</td>
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Rocket FC</td>
-      <td>{{ array_of_games|length }}</td>
-      <td>{{ rocket_goal_total}} - {{ meteor_goal_total }}</td>
-      <td>{{ rocket_score_total}}</td>
-    </tr>
+  {% set ns.count=(ns.count + 1) %}
+  {% endfor %}
   </tbody>
 </table>
 <br>

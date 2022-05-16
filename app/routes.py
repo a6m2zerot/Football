@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, request, redirect, url_for, flash
-from app.models import User, GameStats
+from app.models import User, GameStats, Teams1, Teams2, TeamStats
 from flask_login import current_user, login_user, logout_user
 from app.forms import RegistrationForm
 
@@ -41,45 +41,79 @@ def login():
 @app.route("/index", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        meteor_goal = request.form["meteor_goal"]
-        rocket_goal = request.form["rocket_goal"]
+        first = int(request.form["1st_team_goal"])
+        first_id = request.form["first_id"]
+        first_teamname = Teams1.query.get(first_id).teamname
+        second = int(request.form["2nd_team_goal"])
+        second_id = request.form["second_id"]
+        second_teamname = Teams1.query.get(second_id).teamname
+        if first != "" and second != "":
+            if first > second:
+                m = GameStats(goals_1=first, goals_2=second, passed_goals_1=second, passed_goals_2=first, score_1=3,
+                              score_2=0, teamname_id_1=first_id, teamname_id_2=second_id)
+                k_1 = TeamStats.query.filter_by(
+                    teamname=first_teamname).first()  # .first получает объект, а .all получает массив объекта
+                k_1.team_id_overall_games = k_1.team_id_overall_games + 1
+                k_1.team_id_overall_goals = k_1.team_id_overall_goals + first
+                k_1.team_id_overall_passed_goals = k_1.team_id_overall_passed_goals + second
+                k_1.team_id_overall_score = k_1.team_id_overall_score + 3
 
-        if meteor_goal != "" and rocket_goal != "":  # "Шеф, усё пропало!" - добавил строку, чтоб не не падало :)
-            if meteor_goal > rocket_goal:
-                m = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=3, rocket_score=0)
-                db.session.add(m)
+                k_2 = TeamStats.query.filter_by(teamname=second_teamname).first()
+                k_2.team_id_overall_games = k_2.team_id_overall_games + 1
+                k_2.team_id_overall_goals = k_2.team_id_overall_goals + second
+                k_2.team_id_overall_passed_goals = k_2.team_id_overall_passed_goals + first
+                k_2.team_id_overall_score = k_2.team_id_overall_score + 0
+
+                db.session.add_all([m, k_1, k_2])
                 db.session.commit()
                 request.close()
                 return redirect("/index", 302)
-            elif meteor_goal == rocket_goal:
-                w = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=1, rocket_score=1)
-                db.session.add(w)
+            elif first == second:
+                w = GameStats(goals_1=first, goals_2=second, passed_goals_1=second, passed_goals_2=first, score_1=1,
+                              score_2=1, teamname_id_1=first_id, teamname_id_2=second_id)
+
+                k_1 = TeamStats.query.filter_by(teamname=first_teamname).first()
+                k_1.team_id_overall_games = k_1.team_id_overall_games + 1
+                k_1.team_id_overall_goals = k_1.team_id_overall_goals + first
+                k_1.team_id_overall_passed_goals = k_1.team_id_overall_passed_goals + second
+                k_1.team_id_overall_score = k_1.team_id_overall_score + 1
+
+                k_2 = TeamStats.query.filter_by(teamname=second_teamname).first()
+                k_2.team_id_overall_games = k_2.team_id_overall_games + 1
+                k_2.team_id_overall_goals = k_2.team_id_overall_goals + second
+                k_2.team_id_overall_passed_goals = k_2.team_id_overall_passed_goals + first
+                k_2.team_id_overall_score = k_2.team_id_overall_score + 1
+
+                db.session.add_all([w, k_1, k_2])
                 db.session.commit()
                 request.close()
                 return redirect("/index", 302)
             else:
-                r = GameStats(meteor_goal=meteor_goal, rocket_goal=rocket_goal, meteor_score=0, rocket_score=3)
-                db.session.add(r)
+                r = GameStats(goals_1=first, goals_2=second, passed_goals_2=first, passed_goals_1=second, score_1=0,
+                              score_2=3, teamname_id_1=first_id, teamname_id_2=second_id)
+                k_1 = TeamStats.query.filter_by(teamname=first_teamname).first()
+                k_1.team_id_overall_games = k_1.team_id_overall_games + 1
+                k_1.team_id_overall_goals = k_1.team_id_overall_goals + first
+                k_1.team_id_overall_passed_goals = k_1.team_id_overall_passed_goals + second
+                k_1.team_id_overall_score = k_1.team_id_overall_score + 0
+
+                k_2 = TeamStats.query.filter_by(teamname=second_teamname).first()
+                k_2.team_id_overall_games = k_2.team_id_overall_games + 1
+                k_2.team_id_overall_goals = k_2.team_id_overall_goals + second
+                k_2.team_id_overall_passed_goals = k_2.team_id_overall_passed_goals + first
+                k_2.team_id_overall_score = k_2.team_id_overall_score + 3
+
+                db.session.add_all([r, k_1, k_2])
                 db.session.commit()
                 request.close()
                 return redirect("/index", 302)
 
-    array_of_games = GameStats.query.all()
-
-    sss = GameStats.query.all()
-    meteor_score_total, meteor_goal_total = 0, 0
-    rocket_score_total, rocket_goal_total = 0, 0
-    for elem in sss:
-        meteor_score_total = meteor_score_total + elem.meteor_score  # Набранные очки Метеором
-        rocket_score_total = rocket_score_total + elem.rocket_score  # Набранные очки Ракетой
-        meteor_goal_total = meteor_goal_total + elem.meteor_goal  # Забитые голы Метеором
-        rocket_goal_total = rocket_goal_total + elem.rocket_goal  # Забитые голы Ракетой
-
-    return render_template("index.html", array_of_games=array_of_games,
-                           meteor_score_total=meteor_score_total,
-                           rocket_score_total=rocket_score_total,
-                           meteor_goal_total=meteor_goal_total,
-                           rocket_goal_total=rocket_goal_total)
+    array_of_teams_1 = Teams1.query.all()
+    array_of_teams_2 = Teams2.query.all()
+    array_of_games = GameStats.query.all()  # количество игр всего
+    array_of_games_per_team = TeamStats.query.all()  # количество игр по конкретной команде (по ID)
+    return render_template("index.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
+                           array_of_games=array_of_games, array_of_games_per_team=array_of_games_per_team)
 
 
 @app.route('/logout')
@@ -91,12 +125,35 @@ def logout():
 @app.route("/delete_all_stats")
 def delete_all_stats():
     db.session.query(GameStats).delete()
+    obj = TeamStats.query.all()
+    for i in range(len(obj)):
+        obj[i].team_id_overall_games = 0
+        obj[i].team_id_overall_goals = 0
+        obj[i].team_id_overall_passed_goals = 0
+        obj[i].team_id_overall_score = 0
+        db.session.add(obj[i])
     db.session.commit()
     return redirect("/index", 302)
 
 
 @app.route("/delete_game_stats/<int:game_number>")
-def delete_game_stats(game_number):
+def delete_game_stats(game_number):  # TODO
+    a = GameStats.query.get(game_number)
+    obj_1 = TeamStats.query.filter_by(teamname=a.teams1.teamname).first()
+    obj_2 = TeamStats.query.filter_by(teamname=a.teams2.teamname).first()
+    # update TeamStats for obj_1   :
+    obj_1.team_id_overall_games = obj_1.team_id_overall_games - 1
+    obj_1.team_id_overall_goals = obj_1.team_id_overall_goals - a.goals_1
+    obj_1.team_id_overall_passed_goals = obj_1.team_id_overall_passed_goals - a.passed_goals_1
+    obj_1.team_id_overall_score = obj_1.team_id_overall_score - a.score_1
+
+    # update TeamStats for obj_2   :
+    obj_2.team_id_overall_games = obj_2.team_id_overall_games - 1
+    obj_2.team_id_overall_goals = obj_2.team_id_overall_goals - a.goals_2
+    obj_2.team_id_overall_passed_goals = obj_2.team_id_overall_passed_goals - a.passed_goals_2
+    obj_2.team_id_overall_score = obj_2.team_id_overall_score - a.score_2
+
+    db.session.add_all([obj_1, obj_2])
     db.session.query(GameStats).filter(GameStats.id == game_number).delete()
     db.session.commit()
     """
@@ -106,6 +163,7 @@ def delete_game_stats(game_number):
     db.session.commit()
     """
     return redirect("/index", 302)
+
 
 """
 UPDATE \ Обновление
@@ -120,7 +178,3 @@ attr.rocket_goals = 2
 db.session.add(attr)
 db.session.commit()
 """
-
-
-
-

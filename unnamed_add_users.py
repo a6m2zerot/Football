@@ -1,4 +1,4 @@
-from app.models import User
+from app.models import User, Teams1, Teams2, TeamStats
 from app import db
 
 a = User(username="Андрей")
@@ -9,8 +9,17 @@ d = User(username="Богдан")
 d.set_password("222")
 db.session.add(d)
 
-g = User(username="Виктор")
-g.set_password("333")
-db.session.add(g)
+teamname = ["Rocket", "Comet", "Meteor"]
+for elem in teamname:
+    db.session.add(Teams1(teamname=elem))
+    db.session.add(Teams2(teamname=elem))
+
+for i in teamname:
+    f = TeamStats(teamname=i, team_id_overall_games=0,
+            team_id_overall_goals=0,
+            team_id_overall_passed_goals=0,
+            team_id_overall_score=0)
+    db.session.add(f)
+
 
 db.session.commit()
