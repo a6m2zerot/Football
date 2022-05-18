@@ -123,7 +123,7 @@ def logout():
 
 
 @app.route("/delete_all_stats")
-def delete_all_stats():
+def delete_all_stats():  # удаление статистики всех игр
     db.session.query(GameStats).delete()
     obj = TeamStats.query.all()
     for i in range(len(obj)):
@@ -137,7 +137,7 @@ def delete_all_stats():
 
 
 @app.route("/delete_game_stats/<int:game_number>")
-def delete_game_stats(game_number):  # TODO
+def delete_game_stats(game_number):    # удаление статистики одной конретной игры
     a = GameStats.query.get(game_number)
     obj_1 = TeamStats.query.filter_by(teamname=a.teams1.teamname).first()
     obj_2 = TeamStats.query.filter_by(teamname=a.teams2.teamname).first()
@@ -178,3 +178,10 @@ attr.rocket_goals = 2
 db.session.add(attr)
 db.session.commit()
 """
+
+
+@app.route("/stats/<teamname>")
+def get_stats(teamname):
+    obj = TeamStats.query.filter_by(teamname=teamname).first()
+    return render_template("stats.html", obj=obj)
+

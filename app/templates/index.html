@@ -96,7 +96,7 @@
 
 <!-- TOURNAMENT TABLE -->
 <table class="table caption-top m-4 table-success">
-    <caption><h3>Tournament table</h3></caption>
+    <caption><h3>Tournament Table</h3></caption>
   <thead class="table-dark">
     <tr>
       <th scope="col">#</th>
@@ -111,7 +111,7 @@
   {% for elem in array_of_games_per_team %}
     <tr>
       <th scope="row">{{ ns.count }}</th>
-      <td>{{ elem.teamname }}</td>
+      <td><a href="{{ url_for('get_stats', teamname=elem.teamname) }}">{{ elem.teamname }}</a></td>
       <td>{{ elem.team_id_overall_games }}</td>
         <td>{{ elem.team_id_overall_goals }} - {{ elem.team_id_overall_passed_goals }}</td>
       <td>{{ elem.team_id_overall_score }}</td>

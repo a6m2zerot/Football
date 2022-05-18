@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../static/style_football_stats.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Stats</title>
+</head>
+<body>
+<!-- Here comes the Navbar -->
+<nav class="navbar navbar-light bg-light">
+    <form class="container-fluid justify-content">
+    <a class="btn btn-outline-primary me-4" href="{{ url_for('index') }}" role="button"> <- Get Back</a>
+    <a class="btn btn-outline-success me-4" href="{{ url_for('logout') }}" role="button">Log out</a>
+  </form>
+</nav>
+<br>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+                  <div class="card" style="width: 18rem;">
+                      <div class="card-body">
+                        <h5 class="card-title text-center">"{{ obj.teamname }}" Team Stats:</h5>
+                        <p class="card-text">
+                                <table class="table table-borderles table-success table-striped">
+                                  <thead class="table">
+                                    <tr>
+                                      <th scope="col"></th>
+                                      <th scope="col"></th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <th scope="row" class="normal">Overall games:</th>
+                                        <td><b>{{ obj.team_id_overall_games }}</b></td>
+                                    </tr>
+                                    <tr>
+                                      <th scope="row" class="normal">Overall goals:</th>
+                                      <td><b>{{ obj.team_id_overall_goals }}</b></td>
+                                    </tr>
+                                    <tr>
+                                      <th scope="row" class="normal">Overall passed goals:</th>
+                                      <td><b>{{ obj.team_id_overall_passed_goals }}</b></td>
+                                    </tr>
+                                    <tr>
+                                      <th scope="row" class="normal">Overall score:</th>
+                                      <td><b>{{ obj.team_id_overall_score }}</b></td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                          </p>
+                      </div>
+                  </div>
+    </div>
+
+    <div class="col">
+           <img src="../static/images/{{ obj.teamname }}.png" alt="Wooah! Need to be added the Team Emblem to ..static/images/" width="400" height="400">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</body>
+</html>
