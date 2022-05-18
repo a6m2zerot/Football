@@ -47,7 +47,7 @@ def index():
         second = int(request.form["2nd_team_goal"])
         second_id = request.form["second_id"]
         second_teamname = Teams1.query.get(second_id).teamname
-        if first != "" and second != "":
+        if first != "" and second != "":  # TODO валится при невыборе команды
             if first > second:
                 m = GameStats(goals_1=first, goals_2=second, passed_goals_1=second, passed_goals_2=first, score_1=3,
                               score_2=0, teamname_id_1=first_id, teamname_id_2=second_id)
