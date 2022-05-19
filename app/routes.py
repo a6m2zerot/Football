@@ -43,11 +43,12 @@ def index():
     if request.method == "POST":
         first = int(request.form["1st_team_goal"])
         first_id = request.form["first_id"]
-        first_teamname = Teams1.query.get(first_id).teamname
         second = int(request.form["2nd_team_goal"])
         second_id = request.form["second_id"]
-        second_teamname = Teams1.query.get(second_id).teamname
-        if first != "" and second != "":  # TODO валится при невыборе команды
+
+        if first != "" and second != "" and first_id != "0" and second_id != "0" and first_id != second_id:  # проверка на корректное заполнение полей
+            first_teamname = Teams1.query.get(first_id).teamname
+            second_teamname = Teams1.query.get(second_id).teamname
             if first > second:
                 m = GameStats(goals_1=first, goals_2=second, passed_goals_1=second, passed_goals_2=first, score_1=3,
                               score_2=0, teamname_id_1=first_id, teamname_id_2=second_id)
@@ -107,6 +108,9 @@ def index():
                 db.session.commit()
                 request.close()
                 return redirect("/index", 302)
+        else:
+            flash("Incorrect Input. Please, try again!")
+            return redirect("/index")
 
     array_of_teams_1 = Teams1.query.all()
     array_of_teams_2 = Teams2.query.all()
@@ -137,7 +141,7 @@ def delete_all_stats():  # удаление статистики всех игр
 
 
 @app.route("/delete_game_stats/<int:game_number>")
-def delete_game_stats(game_number):    # удаление статистики одной конретной игры
+def delete_game_stats(game_number):  # удаление статистики одной конретной игры
     a = GameStats.query.get(game_number)
     obj_1 = TeamStats.query.filter_by(teamname=a.teams1.teamname).first()
     obj_2 = TeamStats.query.filter_by(teamname=a.teams2.teamname).first()
@@ -185,3 +189,7 @@ def get_stats(teamname):
     obj = TeamStats.query.filter_by(teamname=teamname).first()
     return render_template("stats.html", obj=obj)
 
+
+@app.route("/test")  # тестовый рут
+def test():
+    return render_template("test.html")

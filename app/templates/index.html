@@ -19,6 +19,12 @@
 </nav>
 <br>
 
+{% for message in get_flashed_messages() %}
+<div class="alert alert-danger border border-danger text-center" role="alert">
+  {{ message }}
+</div>
+{% endfor %}
+
 <!-- Warning Modal "Are you sure to del all stats..." -->
 <div class="modal fade" id="DAS" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -100,7 +106,7 @@
                                   <p class="form-label text-center"><b>Game</b></p>
                                 <label for="1st_team_goal" class="form-label">
                                         <select class="form-select" aria-label="Default select example" name="first_id">
-                                          <option selected>Choose the team:</option>
+                                          <option selected value="{{0}}">Choose the team:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбрана ли команда -->
                                       {% for elem in array_of_teams_1 %}
                                           <option value="{{ elem.id }}">{{ elem.teamname }}</option>
                                       {% endfor %}
@@ -110,10 +116,10 @@
                               </div>
                               <div class="mb-3">
                                 <label for="2nd_team_goal" class="form-label">
-                                        <select class="form-select" aria-label="Default select example" name="second_id">  #  name - то, как получим, value -  то, что получим
-                                          <option selected>Choose the team:</option>
+                                        <select class="form-select" aria-label="Default select example" name="second_id">  <!--  name - то, как получим, value -  то, что получим -->
+                                          <option selected value="{{0}}">Choose the team:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбрана ли команда -->
                                       {% for elem in array_of_teams_2 %}
-                                          <option value="{{ elem.id}}">{{ elem.teamname }}</option>
+                                          <option value="{{ elem.id }}">{{ elem.teamname }}</option>
                                       {% endfor %}
                                         </select>
                                 <input type="number" class="form-control" id="2nd_team_goal" aria-describedby="emailHelp" name="2nd_team_goal"> <!-- МОЖНО ЗАДАВАТЬ РАЗНЫЕ ТИПЫ(type)!-->
