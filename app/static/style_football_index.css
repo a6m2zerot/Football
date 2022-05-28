@@ -24,3 +24,12 @@ box-shadow: 0 2px 4px rgba(0,0,0,.2);
 .unnamed_class{
 border-radius: 300px; /* отступ между заголовком и текстом */
 }
+
+/* Используется в test.html */
+.navbar_bottom {
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}

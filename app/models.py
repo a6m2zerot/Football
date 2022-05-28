@@ -49,6 +49,13 @@ class TeamStats(db.Model):  # статистика отдельной коман
     team_id_overall_score = db.Column(db.Integer())
 
 
+class Players(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    player = db.Column(db.String(20))
+    player_team = db.Column(db.String())
+    player_goals = db.Column(db.Integer())
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
