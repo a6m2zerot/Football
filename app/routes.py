@@ -116,8 +116,10 @@ def index():
     array_of_teams_2 = Teams2.query.all()
     array_of_games = GameStats.query.all()  # количество игр всего
     array_of_games_per_team = TeamStats.query.all()  # количество игр по конкретной команде (по ID)
+    array_of_users = User.query.all()
     return render_template("index.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
-                           array_of_games=array_of_games, array_of_games_per_team=array_of_games_per_team)
+                           array_of_games=array_of_games, array_of_games_per_team=array_of_games_per_team,
+                           array_of_users=array_of_users)
 
 
 @app.route('/logout')
