@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, request, redirect, url_for, flash
-from app.models import User, GameStats, Teams1, Teams2, TeamStats
+from app.models import User, GameStats, Teams1, Teams2, TeamStats, Players
 from flask_login import current_user, login_user, logout_user
 from app.forms import RegistrationForm
 
