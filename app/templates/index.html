@@ -3,17 +3,17 @@
 
 <body>
 
-{% block menu %}
-<!-- Here comes the Navbar -->
+{% block navbar_top %}
 <nav class="navbar navbar-light bg-light">
-  <form class="container-fluid justify-content-end">
-    <a class="btn btn-outline-success me-4" href="{{ url_for('logout') }}" role="button">Log out</a>
-    <a class="btn btn-outline-danger me-2" role="button" data-bs-toggle="modal" data-bs-target="#DAS">Delete all stats</a>
-  </form>
+      <form class="container-fluid justify-content-end">
+        <a class="btn btn-outline-success me-4" href="{{ url_for('logout') }}" role="button">Log out</a>
+        <a class="btn btn-outline-danger me-2" role="button" data-bs-toggle="modal" data-bs-target="#DAS">Delete all stats</a>
+      </form>
 </nav>
+{% endblock %}
+
+{% block menu %}
 <br>
-
-
 {% for message in get_flashed_messages() %}
 <div class="alert alert-danger border border-danger text-center" role="alert">
   {{ message }}
@@ -85,7 +85,7 @@
 <!-- Создание новой игры -->
 <div class="card m-3" style="width: 18rem;">
   <div class="card-body">
-    <a class="knopka_class position-absolute top-50 start-50 translate-middle" data-bs-toggle="modal" data-bs-target="#newgame">Add Game</a>
+    <a class="knopka_class position-absolute top-50 start-50 translate-middle" href="{{ url_for('create_new_game') }}">Add Game</a> <!-- data-bs-toggle="modal" data-bs-target="#newgame" -->
   </div>
 </div>
 </div>
@@ -120,7 +120,8 @@
                                 <input type="number" class="form-control" id="2nd_team_goal" aria-describedby="emailHelp" name="2nd_team_goal"> <!-- МОЖНО ЗАДАВАТЬ РАЗНЫЕ ТИПЫ(type)!-->
                                 </label>
                               </div>
-                              <input type="submit" class="btn btn-outline-success me-2" value="Save">
+                              <!--<input type="submit" class="btn btn-outline-success me-2" value="Save">-->
+                                <button type="button" class="btn btn-outline-warning me-2" data-bs-dismiss="modal">Continue</button>
                               <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
                             </form>
                       </div>
@@ -130,9 +131,10 @@
     </div>
 </div>
 
+
 <br>
 <br>
-<!-- TOURNAMENT TABLE -->
+    <!-- TOURNAMENT TABLE -->
 <table class="table caption-top table-success">
     <caption><h3 align="center">Tournament Table</h3></caption>
   <thead class="table-dark">

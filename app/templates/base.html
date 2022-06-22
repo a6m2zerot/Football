@@ -15,8 +15,18 @@
 </head>
 
 <body>
+{% block navbar_top %}
+<!-- Here comes the Navbar -->
+<nav class="navbar navbar-light bg-light">
+    <form class="container-fluid justify-content">
+    <a class="btn btn-outline-primary me-4" href="{{ url_for('index') }}" role="button"> <- Get Back</a>
+    <a class="btn btn-outline-success me-4" href="{{ url_for('logout') }}" role="button">Log out</a>
+  </form>
+</nav>
+{% endblock %}
+
 {% block menu %}
-        <!-- Here comes the Navbar -->
+        <!-- Here comes the menu -->
 {% endblock %}
 
 <!-- Here comes the Navbar_bottom -->

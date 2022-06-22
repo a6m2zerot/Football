@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <title>New_game</title>
+</head>
+<body>
+{% block menu %}
+                    <div class="card m-3" style="width: 18rem;">
+                      <div class="card-body">
+                            <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
+                              <div class="mb-3">
+                                  <p class="form-label text-center"><b>Game</b></p>
+                                  <p>Team # 1</p>
+                                        <select class="form-select" aria-label="Default select example" name="first_team_id">
+                                          <option selected value="{{0}}">Choose the team:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбрана ли команда -->
+                                      {% for elem in array_of_teams_1 %}
+                                          <option value="{{ elem.id }}">{{ elem.teamname }}</option>
+                                      {% endfor %}
+                                        </select>
+                              </div>
+                              <div class="mb-3">
+                                  <p>Team # 2</p>
+                                        <select class="form-select" aria-label="Default select example" name="second_team_id">  <!--  name - то, как получим, value -  то, что получим -->
+                                          <option selected value="{{0}}">Choose the team:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбрана ли команда -->
+                                      {% for elem in array_of_teams_2 %}
+                                          <option value="{{ elem.id }}">{{ elem.teamname }}</option>
+                                      {% endfor %}
+                                        </select>
+                              </div>
+                              <!--<input type="submit" class="btn btn-outline-success me-2" value="Save">-->
+                                <button type="submit" class="btn btn-outline-warning me-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#continue">Continue</button>
+                              <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
+                            </form>
+                      </div>
+                    </div>
+
+{% if players_a is defined %}
+<!-- Создание игроков -->
+<div class="card m-3" style="width: 18rem;">
+  <div class="card-body">
+    <a class="knopka_class position-absolute top-50 start-50 translate-middle" data-bs-toggle="modal" data-bs-target="#newplayer">Add players</a>
+</div>
+{% endif %}
+<div class="modal fade" id="newplayer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <div class="card m-3" style="width: 18rem;">
+                      <div class="card-body">
+                            <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
+                              <div class="mb-3">
+                                  <p class="form-label text-center"><b>Players</b></p>
+                                    <p>Team {{ a }}</p>
+                                        <select class="form-select" aria-label="Default select example" name="first_id">
+                                          <option selected value="{{0}}">Choose the player:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбран ли игрок -->
+                                      {% for elem in players_a %}
+                                          <option value="{{ elem.id }}">{{ elem.player }}</option>
+                                      {% endfor %}
+                                        </select>
+                              </div>
+                              <div class="mb-3">
+                                  <p>Team {{ b }}</p>
+                                        <select class="form-select" aria-label="Default select example" name="second_id">  <!--  name - то, как получим, value -  то, что получим -->
+                                          <option selected value="{{0}}">Choose the player:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбран ли игрок -->
+                                      {% for elem in players_b %}
+                                          <option value="{{ elem.id }}">{{ elem.player }}</option>
+                                      {% endfor %}
+                                        </select>
+                              </div>
+                              <input type="submit" class="btn btn-outline-success me-2" value="Save">
+                              <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
+                            </form>
+                      </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+</body>
+</html>

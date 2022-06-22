@@ -1,7 +1,7 @@
 from app import app, db
 from flask import render_template, request, redirect, url_for, flash
 from app.models import User, GameStats, Teams1, Teams2, TeamStats, Players
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import RegistrationForm
 
 
@@ -39,6 +39,7 @@ def login():
 
 
 @app.route("/index", methods=["GET", "POST"])
+@login_required
 def index():
     if request.method == "POST":
         first = int(request.form["1st_team_goal"])
@@ -122,6 +123,31 @@ def index():
                            array_of_users=array_of_users)
 
 
+@app.route("/new_game", methods=["GET", "POST"])  # создаем новую игру при нажатии на +Add
+@login_required
+def create_new_game():
+    if request.method == "POST":
+        first_team_id = int(request.form["first_team_id"])
+        second_team_id = int(request.form["second_team_id"])
+
+        if first_team_id and second_team_id:
+            a = Teams1.query.filter_by(id=first_team_id).first().teamname
+            b = Teams1.query.filter_by(id=second_team_id).first().teamname
+            players_b = Players.query.filter_by(player_team=b).all()
+            players_a = Players.query.filter_by(player_team=a).all()
+            array_of_teams_1 = Teams1.query.all()
+            array_of_teams_2 = Teams2.query.all()
+            array_of_players = Players.query.all()
+            return render_template("new_game.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
+                                   array_of_players=array_of_players, players_a=players_a, players_b=players_b, a=a, b=b)
+
+    array_of_teams_1 = Teams1.query.all()
+    array_of_teams_2 = Teams2.query.all()
+    array_of_players = Players.query.all()
+    return render_template("new_game.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
+                            array_of_players=array_of_players)
+
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -187,6 +213,7 @@ db.session.commit()
 
 
 @app.route("/stats/<teamname>")
+@login_required
 def get_stats(teamname):
     obj = TeamStats.query.filter_by(teamname=teamname).first()
     return render_template("stats.html", obj=obj)
