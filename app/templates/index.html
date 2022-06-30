@@ -47,15 +47,29 @@
           <div class="mb-3">
               <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="modal" data-bs-target="#DTG"></button>
               <p class="form-label text-center"><b>Game # {{ ns.count }}</b></p>
-
-            <label for="exampleInputEmail" class="form-label">{{ elem_games.teams1.teamname }}</label>
-              <div class="form-control" id="exampleInputEmail" aria-describedby="emailHelp">{{ elem_games.goals_1 }}</div>
-
+            <br>
+            <div class="input-group">
+               <span class="input-group-text">Team {{ elem_games.teams1.teamname }}</span>
+               <div class="form-control" style="text-align: center;" aria-describedby="emailHelp">{{ elem_games.goals_1 }}</div>
+              {% if elem_games.goals_1 !=0 %}
+              <p class="form-label"><i>Goleador: {{ elem_games.playerstats[0].players.player }}</i></p>
+              {% else %}
+              <p class="form-label"><i>Goleador: No one </i></p>
+              {% endif %}
+            </div>
           </div>
           <div class="mb-3">
-
-            <label for="exampleInputPassword" class="form-label">{{ elem_games.teams2.teamname }}</label>
-              <div class="form-control" id="exampleInputPassword">{{ elem_games.goals_2 }}</div>
+            <div class="input-group">
+               <span class="input-group-text">Team {{ elem_games.teams2.teamname }}</span>
+               <div class="form-control" style="text-align: center;" aria-describedby="emailHelp">{{ elem_games.goals_2 }}</div>
+              {% if elem_games.goals_2 !=0 and elem_games.goals_1 == 0 %}
+              <p class="form-label"><i>Goleador: {{ elem_games.playerstats[0].players.player }}</i></p>
+              {% elif elem_games.goals_2 !=0 and elem_games.goals_1 !=0 %}
+              <p class="form-label"><i>Goleador: {{ elem_games.playerstats[1].players.player }}</i></p>
+              {% else %}
+              <p class="form-label"><i>Goleador: No one </i></p>
+              {% endif %}
+            </div>
           </div>
   </div>
 </div>
@@ -90,48 +104,6 @@
 </div>
 </div>
 
-<div class="modal fade" id="newgame" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                    <div class="card m-3" style="width: 18rem;">
-                      <div class="card-body">
-                            <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
-                              <div class="mb-3">
-                                  <p class="form-label text-center"><b>Game</b></p>
-                                <label for="1st_team_goal" class="form-label">
-                                        <select class="form-select" aria-label="Default select example" name="first_id">
-                                          <option selected value="{{0}}">Choose the team:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбрана ли команда -->
-                                      {% for elem in array_of_teams_1 %}
-                                          <option value="{{ elem.id }}">{{ elem.teamname }}</option>
-                                      {% endfor %}
-                                        </select>
-                                <input type="number" class="form-control" id="1st_team_goal" aria-describedby="emailHelp" name="1st_team_goal">
-                                </label>
-                              </div>
-                              <div class="mb-3">
-                                <label for="2nd_team_goal" class="form-label">
-                                        <select class="form-select" aria-label="Default select example" name="second_id">  <!--  name - то, как получим, value -  то, что получим -->
-                                          <option selected value="{{0}}">Choose the team:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбрана ли команда -->
-                                      {% for elem in array_of_teams_2 %}
-                                          <option value="{{ elem.id }}">{{ elem.teamname }}</option>
-                                      {% endfor %}
-                                        </select>
-                                <input type="number" class="form-control" id="2nd_team_goal" aria-describedby="emailHelp" name="2nd_team_goal"> <!-- МОЖНО ЗАДАВАТЬ РАЗНЫЕ ТИПЫ(type)!-->
-                                </label>
-                              </div>
-                              <!--<input type="submit" class="btn btn-outline-success me-2" value="Save">-->
-                                <button type="button" class="btn btn-outline-warning me-2" data-bs-dismiss="modal">Continue</button>
-                              <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
-                            </form>
-                      </div>
-                    </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 <br>
 <br>
     <!-- TOURNAMENT TABLE -->
@@ -162,9 +134,34 @@
 </table>
 <br>
 <br>
+
+    <!-- GOLEADORS TABLE -->
+<table class="table caption-top table-success">
+    <caption><h3 align="center">Goleadors Table</h3></caption>
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Player</th>
+      <th scope="col">Team</th>
+      <th scope="col">Goals</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% set ns = namespace(count=1) %}
+  {% for elem in array_of_players %}
+    <tr>
+      <th scope="row">{{ ns.count }}</th>
+      <td>{{ elem.player }}</td>
+      <td><a href="{{ url_for('get_stats', teamname=elem.player_team) }}">{{ elem.player_team }}</a></td>
+      <td>{{ elem.player_goals }}</td>
+    </tr>
+  {% set ns.count=(ns.count + 1) %}
+  {% endfor %}
+  </tbody>
+</table>
+<br>
+<br>
 {% endblock %}
-
-
 </body>
 </html>
 

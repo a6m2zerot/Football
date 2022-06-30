@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
     <title>New_game</title>
 </head>
 <body>
 {% block menu %}
+
                     <div class="card m-3" style="width: 18rem;">
                       <div class="card-body">
                             <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
@@ -29,19 +29,21 @@
                                       {% endfor %}
                                         </select>
                               </div>
-                              <!--<input type="submit" class="btn btn-outline-success me-2" value="Save">-->
                                 <button type="submit" class="btn btn-outline-warning me-2" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#continue">Continue</button>
-                              <button type="button" class="btn btn-outline-danger me-2" data-bs-dismiss="modal">Close</button>
+                                <a class="btn btn-outline-danger me-2" href="{{ url_for('index') }}" role="button">Close</a>
                             </form>
                       </div>
                     </div>
 
 {% if players_a is defined %}
+    {% if players_b is defined %}
 <!-- Создание игроков -->
+
 <div class="card m-3" style="width: 18rem;">
-  <div class="card-body">
-    <a class="knopka_class position-absolute top-50 start-50 translate-middle" data-bs-toggle="modal" data-bs-target="#newplayer">Add players</a>
+  <div class="card-body" style="text-align: center;">
+    <a class="knopka_class position-absolute top-50 start-50 translate-middle" data-bs-toggle="modal" data-bs-target="#newplayer">Add Players and Scores</a>
 </div>
+    {% endif %}
 {% endif %}
 <div class="modal fade" id="newplayer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -49,11 +51,14 @@
             <div class="modal-header">
                     <div class="card m-3" style="width: 18rem;">
                       <div class="card-body">
-                            <form method="post" action="">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
+                            <form method="post" action="{{ url_for('index') }}">     <!-- НЕ ЗАБЫВАЕМ ПРОПИСЫВАТЬ МЕТОД(method)! -->
                               <div class="mb-3">
                                   <p class="form-label text-center"><b>Players</b></p>
-                                    <p>Team {{ a }}</p>
-                                        <select class="form-select" aria-label="Default select example" name="first_id">
+                                        <div class="input-group">
+                                          <span class="input-group-text">Team {{ a }}</span>
+                                          <input style="text-align: center;" type="number" class="form-control" placeholder="Input Score" aria-describedby="emailHelp" name="1st_team_goal"> <!-- Забитые мячи Команды 1 -->
+                                        </div>
+                                        <select class="form-select" aria-label="Default select example" name="1st_player_id">
                                           <option selected value="{{0}}">Choose the player:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбран ли игрок -->
                                       {% for elem in players_a %}
                                           <option value="{{ elem.id }}">{{ elem.player }}</option>
@@ -61,8 +66,11 @@
                                         </select>
                               </div>
                               <div class="mb-3">
-                                  <p>Team {{ b }}</p>
-                                        <select class="form-select" aria-label="Default select example" name="second_id">  <!--  name - то, как получим, value -  то, что получим -->
+                                        <div class="input-group">
+                                          <span class="input-group-text">Team {{ b }}</span>
+                                          <input style="text-align: center;" type="number" class="form-control" placeholder="Input Score" aria-describedby="emailHelp" name="2nd_team_goal"> <!-- Забитые мячи Команды 2 -->
+                                        </div>
+                                        <select class="form-select" aria-label="Default select example" name="2nd_player_id">  <!--  name - то, как получим, value -  то, что получим -->
                                           <option selected value="{{0}}">Choose the player:</option>  <!-- Добавлен value="{{0}} для проверки строки, выбран ли игрок -->
                                       {% for elem in players_b %}
                                           <option value="{{ elem.id }}">{{ elem.player }}</option>
@@ -79,10 +87,6 @@
     </div>
 </div>
 
-
-
-
 {% endblock %}
-
 </body>
 </html>

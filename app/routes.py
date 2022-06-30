@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, request, redirect, url_for, flash
-from app.models import User, GameStats, Teams1, Teams2, TeamStats, Players
+from app.models import User, GameStats, Teams1, Teams2, TeamStats, Players, Players_Goals
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import RegistrationForm
 
@@ -43,18 +43,67 @@ def login():
 def index():
     if request.method == "POST":
         first = int(request.form["1st_team_goal"])
-        first_id = request.form["first_id"]
+        first_player_id = int(request.form["1st_player_id"])
         second = int(request.form["2nd_team_goal"])
-        second_id = request.form["second_id"]
+        second_player_id = int(request.form["2nd_player_id"])
 
-        if first != "" and second != "" and first_id != "0" and second_id != "0" and first_id != second_id:  # проверка на корректное заполнение полей
-            first_teamname = Teams1.query.get(first_id).teamname
-            second_teamname = Teams1.query.get(second_id).teamname
+        first_team_name = Players.query.filter_by(id=first_player_id).first().player_team  # получаем название команды по игроку
+        first_id = Teams1.query.filter_by(teamname=first_team_name).first().id  # получаем id команды по ее названию
+        player_1_name = Players.query.get(first_player_id).player
+        player_2_name = Players.query.get(second_player_id).player
+
+        second_team_name = Players.query.filter_by(id=second_player_id).first().player_team
+        second_id = Teams2.query.filter_by(teamname=second_team_name).first().id
+
+        if first != "" and second != "" and first_id != "0" and second_id != "0" and first_id != second_id:
+            if first == 0 and second != 0:
+                first_teamname = Teams1.query.get(first_id).teamname
+                second_teamname = Teams1.query.get(second_id).teamname
+
+                z_2 = Players.query.filter_by(player=player_2_name).first()
+                z_2.player_goals = z_2.player_goals + second
+
+                qw = GameStats.query.all()
+                total = len(qw) + 1
+                sss_2 = Players_Goals(game_number=total, player_id=second_player_id, number_of_goals=second)
+                db.session.add_all([z_2, sss_2])
+                db.session.commit()
+            elif second == 0 and first != 0:
+                first_teamname = Teams1.query.get(first_id).teamname
+                second_teamname = Teams1.query.get(second_id).teamname
+
+                z_1 = Players.query.filter_by(
+                    player=player_1_name).first()  # вводим инфу в Players для сбора статистики
+                z_1.player_goals = z_1.player_goals + first
+
+                qw = GameStats.query.all()
+                total = len(qw) + 1
+                sss_1 = Players_Goals(game_number=total, player_id=first_player_id, number_of_goals=first)
+                db.session.add_all([z_1, sss_1])
+                db.session.commit()
+            elif first == 0 and second == 0:
+                first_teamname = Teams1.query.get(first_id).teamname
+                second_teamname = Teams1.query.get(second_id).teamname
+            else:
+                first_teamname = Teams1.query.get(first_id).teamname
+                second_teamname = Teams1.query.get(second_id).teamname
+
+                z_1 = Players.query.filter_by(player=player_1_name).first()  # вводим инфу в Players для сбора статистики
+                z_2 = Players.query.filter_by(player=player_2_name).first()
+                z_1.player_goals = z_1.player_goals + first
+                z_2.player_goals = z_2.player_goals + second
+
+                qw = GameStats.query.all()
+                total = len(qw) + 1
+                sss_1 = Players_Goals(game_number=total, player_id=first_player_id, number_of_goals=first)
+                sss_2 = Players_Goals(game_number=total, player_id=second_player_id, number_of_goals=second)
+                db.session.add_all([z_1, z_2, sss_1, sss_2])
+                db.session.commit()
+
             if first > second:
                 m = GameStats(goals_1=first, goals_2=second, passed_goals_1=second, passed_goals_2=first, score_1=3,
                               score_2=0, teamname_id_1=first_id, teamname_id_2=second_id)
-                k_1 = TeamStats.query.filter_by(
-                    teamname=first_teamname).first()  # .first получает объект, а .all получает массив объекта
+                k_1 = TeamStats.query.filter_by(teamname=first_teamname).first()  # .first получает объект, а .all получает массив объекта
                 k_1.team_id_overall_games = k_1.team_id_overall_games + 1
                 k_1.team_id_overall_goals = k_1.team_id_overall_goals + first
                 k_1.team_id_overall_passed_goals = k_1.team_id_overall_passed_goals + second
@@ -70,6 +119,7 @@ def index():
                 db.session.commit()
                 request.close()
                 return redirect("/index", 302)
+
             elif first == second:
                 w = GameStats(goals_1=first, goals_2=second, passed_goals_1=second, passed_goals_2=first, score_1=1,
                               score_2=1, teamname_id_1=first_id, teamname_id_2=second_id)
@@ -90,6 +140,7 @@ def index():
                 db.session.commit()
                 request.close()
                 return redirect("/index", 302)
+
             else:
                 r = GameStats(goals_1=first, goals_2=second, passed_goals_2=first, passed_goals_1=second, score_1=0,
                               score_2=3, teamname_id_1=first_id, teamname_id_2=second_id)
@@ -113,14 +164,16 @@ def index():
             flash("Incorrect Input. Please, try again!")
             return redirect("/index")
 
+
     array_of_teams_1 = Teams1.query.all()
     array_of_teams_2 = Teams2.query.all()
     array_of_games = GameStats.query.all()  # количество игр всего
     array_of_games_per_team = TeamStats.query.all()  # количество игр по конкретной команде (по ID)
     array_of_users = User.query.all()
+    array_of_players = Players.query.all()
     return render_template("index.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
                            array_of_games=array_of_games, array_of_games_per_team=array_of_games_per_team,
-                           array_of_users=array_of_users)
+                           array_of_users=array_of_users, array_of_players=array_of_players)
 
 
 @app.route("/new_game", methods=["GET", "POST"])  # создаем новую игру при нажатии на +Add
@@ -138,14 +191,16 @@ def create_new_game():
             array_of_teams_1 = Teams1.query.all()
             array_of_teams_2 = Teams2.query.all()
             array_of_players = Players.query.all()
-            return render_template("new_game.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
-                                   array_of_players=array_of_players, players_a=players_a, players_b=players_b, a=a, b=b)
+            return render_template("new_game.html", array_of_teams_1=array_of_teams_1,
+                                   array_of_teams_2=array_of_teams_2,
+                                   array_of_players=array_of_players, players_a=players_a, players_b=players_b, a=a,
+                                   b=b)
 
     array_of_teams_1 = Teams1.query.all()
     array_of_teams_2 = Teams2.query.all()
     array_of_players = Players.query.all()
     return render_template("new_game.html", array_of_teams_1=array_of_teams_1, array_of_teams_2=array_of_teams_2,
-                            array_of_players=array_of_players)
+                           array_of_players=array_of_players)
 
 
 @app.route('/logout')
@@ -157,6 +212,7 @@ def logout():
 @app.route("/delete_all_stats")
 def delete_all_stats():  # удаление статистики всех игр
     db.session.query(GameStats).delete()
+
     obj = TeamStats.query.all()
     for i in range(len(obj)):
         obj[i].team_id_overall_games = 0
@@ -164,13 +220,36 @@ def delete_all_stats():  # удаление статистики всех игр
         obj[i].team_id_overall_passed_goals = 0
         obj[i].team_id_overall_score = 0
         db.session.add(obj[i])
+
+    f = Players.query.all()
+    for j in range(len(f)):
+        f[j].player_goals = 0
+        db.session.add(f[j])
     db.session.commit()
     return redirect("/index", 302)
 
 
 @app.route("/delete_game_stats/<int:game_number>")
 def delete_game_stats(game_number):  # удаление статистики одной конретной игры
+    # update TeamStats for players
     a = GameStats.query.get(game_number)
+    if a.goals_1 == 0 and a.goals_2 == 0:
+        pass
+    elif a.goals_1 != 0 and a.goals_2 == 0:
+        pl_1 = Players.query.filter_by(player=a.playerstats[0].players.player).first()
+        pl_1.player_goals = pl_1.player_goals - a.goals_1
+        db.session.add(pl_1)
+    elif a.goals_1 == 0 and a.goals_2 != 0:
+        pl_2 = Players.query.filter_by(player=a.playerstats[0].players.player).first()
+        pl_2.player_goals = pl_2.player_goals - a.goals_2
+        db.session.add(pl_2)
+    else:
+        pl_1 = Players.query.filter_by(player=a.playerstats[0].players.player).first()
+        pl_1.player_goals = pl_1.player_goals - a.goals_1
+        pl_2 = Players.query.filter_by(player=a.playerstats[1].players.player).first()
+        pl_2.player_goals = pl_2.player_goals - a.goals_2
+        db.session.add_all([pl_1, pl_2])
+
     obj_1 = TeamStats.query.filter_by(teamname=a.teams1.teamname).first()
     obj_2 = TeamStats.query.filter_by(teamname=a.teams2.teamname).first()
     # update TeamStats for obj_1   :
@@ -187,29 +266,9 @@ def delete_game_stats(game_number):  # удаление статистики о�
 
     db.session.add_all([obj_1, obj_2])
     db.session.query(GameStats).filter(GameStats.id == game_number).delete()
+
     db.session.commit()
-    """
-    2-ой вариант 
-    attr = Gamestats.query.get(game_number)
-    db.session.delete(attr)
-    db.session.commit()
-    """
     return redirect("/index", 302)
-
-
-"""
-UPDATE \ Обновление
-1.Получение объекта 
-2. Изменение конкретного поля объекта
-3. Добавление в сессию измененного объекта
-4. Сохранение изменений
-
-attr = GameStats.query.get(1)
-attr.meteor_goals = 10
-attr.rocket_goals = 2
-db.session.add(attr)
-db.session.commit()
-"""
 
 
 @app.route("/stats/<teamname>")
